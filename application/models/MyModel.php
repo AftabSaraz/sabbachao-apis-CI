@@ -36,7 +36,7 @@ class MyModel extends CI_Model {
     {
         $q  = $this->db->select('password,id,mobile_number AS contact,password_token')->from('sab_customers')->where('mobile_number',$contact)->get()->row();
         // change moizam 
-        
+        // change kapil
         if($q == ""){
             return array('status' => 400,'message' => 'Invalid contact or Password.');
         } else {
