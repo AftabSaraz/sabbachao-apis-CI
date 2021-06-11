@@ -63,7 +63,7 @@ class MyModel extends CI_Model {
                   return array('status' => 500,'message' => 'Internal server error.');
                } else {
                   $this->db->trans_commit();
-                  $data = $this->db->select('id,username,email,mobile_number AS contact,dob,gender')->from('sab_riders')->where('id',$id)->order_by('id','desc')->get()->result();
+                  $data = $this->db->select('id,username,email,mobile_number AS contact,dob,gender,rider_type_id')->from('sab_riders')->where('id',$id)->order_by('id','desc')->get()->result();
                   if($bypass==true){
                       $msg= "SignUp Successfully";
                   }else{
@@ -86,7 +86,7 @@ class MyModel extends CI_Model {
                 unset($data['contact']);
                 $this->db->insert('sab_riders',$data);
                 $insert_id = $this->db->insert_id();
-                $data = $this->db->select('id,username,email,mobile_number AS contact,dob,gender')->from('sab_riders')->where('id',$insert_id)->order_by('id','desc')->get()->result();
+                $data = $this->db->select('id,username,email,mobile_number AS contact,dob,gender,rider_type_id')->from('sab_riders')->where('id',$insert_id)->order_by('id','desc')->get()->result();
                 return array('status' => 201,'message' => 'SignUp Successfully','data'=>$data);
             } 
     }
