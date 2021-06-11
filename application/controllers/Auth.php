@@ -35,8 +35,8 @@ class Auth extends CI_Controller {
 			json_output(400,array('status' => 400,'message' => 'Bad request.'));
 		} else {
 			$params = json_decode(file_get_contents('php://input'), TRUE);
-			if(isset($params['username']) && isset($params['contact']) && isset($params['password']) ){
-					if ($params['username'] == "" || $params['contact'] == "" || $params['password'] == "") {
+			if(isset($params['username']) && isset($params['contact']) && isset($params['password']) && isset($params['rider_type_id'])){
+					if ($params['username'] == "" || $params['contact'] == "" || $params['password'] == "" || $params['rider_type_id'] == "") {
 							$respStatus = 400;
 							$resp = array('status' => 400,'message' =>  'All Fields are required');
 					} else {
