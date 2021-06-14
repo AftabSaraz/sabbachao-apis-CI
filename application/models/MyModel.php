@@ -19,17 +19,42 @@ class MyModel extends CI_Model {
 
     public function verify_token($params){
         
+        extract($_REQUEST);
+       
         $token   = '';
         $token   = $this->input->get_request_header('token', TRUE);
+       
         !$token  && $token  = $this->input->get('token', TRUE);
         !$token  && $token  = $this->input->post('token', TRUE);
-        if($token){
+   
+        if($action == "changepassword")
+        {
             $q = $this->db->select('*')->from('sab_rider_sessions')->where(['session_token'=>$token,'status_type'=>'1'])->get()->result_array();
+
             if($q){
+               
                 return $q[0]['rider_id'];
             }
-        } 
-        json_output(401,array('status' => 401,'message' => 'Unauthorized.'));
+        }
+        else if($action == "refrence_number")
+        {
+            $q = $this->db->select('*')->from('sab_rider_sessions')->where(['session_token'=>$token,'status_type'=>'1'])->get()->result_array();
+
+            if($q){
+               
+                return $q[0]['rider_id'];
+            }
+        }
+        // if($token){
+        //     $q = $this->db->select('*')->from('sab_rider_sessions')->where(['session_token'=>$token,'status_type'=>'1'])->get()->result_array();
+
+        //     if($q){
+               
+        //         return $q[0]['rider_id'];
+        //     }
+            
+        // } 
+        json_output(401,array('status' => 401,'message' => 'Unauthorized4.'));
         return false;
     }
     public function login($contact,$password, $bypass=false)
@@ -76,6 +101,12 @@ class MyModel extends CI_Model {
             }
         }
     }
+
+    public function getRiderByRef($code)
+    {
+            return $this->db->select('*')->from('sab_riders')->where('reference_number',$code)->get()->row();
+
+    }
     public function signup($data)
     { 
             $c = $this->db->select('mobile_number')->from('sab_riders')->where('mobile_number',$data['contact'])->get()->row();
@@ -99,16 +130,16 @@ class MyModel extends CI_Model {
             return array('status' => 201,'message' => "contact does't exists");
         } 
     }
-    public function forgotpassword($data)
+	public function forgotpassword($data)
     {
         $c = $this->db->select('mobile_number AS contact,id')->from('sab_riders')->where('mobile_number',$data['contact'])->get()->row();
         if($c && $c->contact==$data['contact']){
-            $r = $this->db->where('id',$c->id)->update('sab_riders',['password'=>$data['password'],'password_token'=>$data['password_token']]);
-            if($r){
-                return array('status' => 200,'message' => 'Password has been updated.');
-            }else{
-                return array('status' => 200,'message' => 'Password not updated.');
-            }
+			$r = $this->db->where('id',$c->id)->update('sab_riders',['password'=>$data['password'],'password_token'=>$data['password_token']]);
+			if($r){
+				return array('status' => 200,'message' => 'Password has been updated.');
+			}else{
+				return array('status' => 200,'message' => 'Password not updated.');
+			}
         }else{
             return array('status' => 201,'message' => "contact does't exists");
         } 
@@ -117,7 +148,7 @@ class MyModel extends CI_Model {
     {
         $user = $this->db->select('*')->from('sab_riders')->where('id',$data['user_id'])->get()->row();
         if($user && ($user->password == crypt($data['old_password'],$user->password_token))){
-            $randomIdLength=10;
+			$randomIdLength=10;
             $token = '';
             do {
                 $bytes = random_bytes($randomIdLength);
@@ -140,6 +171,19 @@ class MyModel extends CI_Model {
         }else{
             return array('status' => 400,'message' => "Invalid old password");
         } 
+    }
+    public function get_reference_number($data)
+    {
+   
+        $user = $this->db->select('*')->from('sab_riders')->where('id',$data['user_id'])->get()->row();
+        if($user)
+        {
+            $q = $this->db->select('*')->from('sab_rider_sessions')->where('id',$data['user_id'])->get()->row();
+            $reference_number = $user->reference_number;
+            $token = $q->session_token;
+             return array('status' => 200,'reference_number' => "$reference_number", 'token' => "$token");
+            
+        }
     }
     public function updateUser($data)
     {   
@@ -191,6 +235,7 @@ class MyModel extends CI_Model {
         }
     }
 
+ 
     public function book_all_data()
     {
         return $this->db->select('id,title,author')->from('books')->order_by('id','desc')->get()->result();

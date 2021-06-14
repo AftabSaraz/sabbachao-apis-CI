@@ -28,6 +28,19 @@ class Auth extends CI_Controller {
 			}
 		}
 	}
+	public function generateRandomStr()
+	{
+		$characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+		$charactersLength = strlen($characters);
+		$randomString = '';
+
+		$reference_number = "";
+		$length = 10;
+		for ($i = 0; $i < $length; $i++) {
+			$reference_number .= $characters[rand(0, $charactersLength - 1)];
+		}
+		return $reference_number;
+	}
     public function signup()
 	{	
 		$method = $_SERVER['REQUEST_METHOD'];
@@ -53,6 +66,20 @@ class Auth extends CI_Controller {
 						} while (strlen($token) < $randomIdLength);
 						$params['password_token'] = $token;
 						$params['password'] = crypt($params['password'],$token);
+
+						$reference_number = -1;
+						while($reference_number==-1) {
+							$str = $this->generateRandomStr();
+							$result = $this->MyModel->getRiderByRef($str);
+
+								if($result){
+			               				continue;
+			            		 }
+			            			$reference_number = $str;
+						}
+
+						
+					    $params['reference_number'] = $reference_number;
 						$resp = $this->MyModel->signup($params);
 						$resp['status'] === 201 && $resp =  $this->MyModel->login($params['contact'],$params['password'], true);
 					}
@@ -142,6 +169,7 @@ class Auth extends CI_Controller {
 				if (!$params['user_id']) {
 					return;
 				}
+
 				$params['new_password']= empty($params['new_password'])?'':$params['new_password'];
 				$params['confirm_password']= empty($params['confirm_password'])?'':$params['confirm_password'];
 				if(empty($params['new_password']) || empty($params['confirm_password'])){
@@ -156,7 +184,15 @@ class Auth extends CI_Controller {
 				}
 				$response = $this->MyModel->changepassword($params);
 				json_output($response['status'],$response);
-			}elseif($action==""){
+			}elseif($action && $action=='refrence_number'){
+				$params['user_id'] = $this->MyModel->verify_token($params);
+				if (!$params['user_id']) {
+					return;
+				}
+				$response = $this->MyModel->get_reference_number($params);
+				json_output($response['status'],$response);
+			}
+			elseif($action==""){
 				return json_output(400,array('status' => 400,'message' => 'Action is required'));
 			}
 			
@@ -177,5 +213,7 @@ class Auth extends CI_Controller {
 			}
 		}
 	}
+
+    
 	
 }
