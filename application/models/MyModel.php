@@ -241,7 +241,7 @@
            
             !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
             !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
-            if($api_key=="eoSSjKgHrb")
+            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
             {
                 $data = $this->db->select('id AS "Rider ID",username AS "Rider Name",mobile_number AS "Rider Number",rider_image')->from('sab_riders')->where('reference_number',$params['reference_number'])->get()->result();
                     return array('status' => 201,'message' => 'Added Successfully','data'=>$data);
@@ -259,7 +259,7 @@
            
             !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
             !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
-            if($api_key=="eoSSjKgHrb")
+            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
             {
                 $q = $this->db->insert('sab_seller_rider',$params);
                 if($q)
@@ -284,7 +284,7 @@
            
             !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
             !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
-            if($api_key=="eoSSjKgHrb")
+            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
             {
                 $data = $this->db->select('username AS "Rider Name",mobile_number AS "Rider Number",rider_image, created_at AS "Rider Adding Date and Time"')->from('sab_riders')->where('id',$params['rider_id'])->get()->result();
                     return array('status' => 201,'message' => 'Rider Infomration','data'=>$data);
@@ -301,7 +301,7 @@
            
             !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
             !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
-            if($api_key=="eoSSjKgHrb")
+            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
             {
                 $q = $this->db->where(['rider_id' => $params['rider_id'], 'store_id' => $params['store_id']])->update('sab_seller_rider',array('status' => 6));
                 if($q)
@@ -326,7 +326,7 @@
             !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
             !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
         
-            if($api_key=="eoSSjKgHrb")
+            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
             {
                 $q = $this->db->where(['rider_id' => $params['rider_id'], 'store_id' => $params['store_id']])->update('sab_seller_rider',array('status' => 5));
                 if($q)
@@ -342,5 +342,32 @@
             {
                  return array('status' => 201,'message' => 'Something Went Wrong!');
             }
+        }
+        public function rider_list($params)
+        {
+            $api_key   = $this->input->get_request_header('api_key', TRUE);
+           
+            !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
+            !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
+            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+            {
+                $data = $this->db->select(
+                    'sab_riders.id AS Rider ID,
+                     sab_riders.username AS Rider Name,
+                     sab_riders.mobile_number AS Rider Number,
+                     sab_seller_rider.status AS Status
+                    '
+                )
+                ->from('sab_seller_rider')
+                ->where('store_id',$params['store_id'])
+                ->join('sab_riders', 'sab_riders.id = sab_seller_rider.rider_id')
+                ->get()->result();
+                return array('status' => 201,'message' => 'Rider Infomration','data'=>$data);
+            }
+            else
+            {
+                return array('status' => 201,'message' => 'Something Went Wrong Please Try Again Later');
+            }
+        
         }
     }

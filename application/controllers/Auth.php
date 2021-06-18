@@ -369,5 +369,31 @@
 				}
 			}
 		}
-	    
+	    public function rider_list()
+		{
+			$method = $_SERVER['REQUEST_METHOD'];
+			if($method != 'POST')
+			{
+				json_output(400,array('status' => 400,'message' => 'Bad request.'));
+			} 
+			else 
+			{
+				$params = json_decode(file_get_contents('php://input'), TRUE);
+				if(isset($params['store_id']) )
+				{
+					if ($params['store_id'] == "" ) 
+					{
+						$respStatus = 400;
+						$resp = array('status' => 400,'message' =>  'Store Id is required');
+					} 
+					$resp = $this->MyModel->rider_list($params);
+				}
+				else
+				{
+					$respStatus = 400;
+					$resp = array('status' => 400,'message' =>  'Store Id is required');
+				}
+				json_output($resp['status'],$resp); 
+			}
+		}
 	}
