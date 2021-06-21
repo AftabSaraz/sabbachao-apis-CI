@@ -369,7 +369,8 @@
 				}
 			}
 		}
-	    public function rider_list()
+
+		public function rider_list()
 		{
 			$method = $_SERVER['REQUEST_METHOD'];
 			if($method != 'POST')
@@ -396,4 +397,5 @@
 				json_output($resp['status'],$resp); 
 			}
 		}
+	    
 	}

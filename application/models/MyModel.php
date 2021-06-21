@@ -19,15 +19,14 @@
 
         public function verify_token($params)
         {
-            
+
             extract($_REQUEST);
-           
             $token   = '';
             $token   = $this->input->get_request_header('token', TRUE);
            
             !$token  && $token  = $this->input->get('token', TRUE);
             !$token  && $token  = $this->input->post('token', TRUE);
-       
+          
             if($action == "changepassword")
             {
                 $q = $this->db->select('*')->from('sab_rider_sessions')->where(['session_token'=>$token,'status_type'=>'1'])->get()->result_array();
@@ -38,6 +37,15 @@
                 }
             }
             else if($action == "refrence_number")
+            {
+                $q = $this->db->select('*')->from('sab_rider_sessions')->where(['session_token'=>$token,'status_type'=>'1'])->get()->result_array();
+
+                if($q)
+                {   
+                    return $q[0]['rider_id'];
+                }
+            }
+            else if($action == "data")
             {
                 $q = $this->db->select('*')->from('sab_rider_sessions')->where(['session_token'=>$token,'status_type'=>'1'])->get()->result_array();
 
