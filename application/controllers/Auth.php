@@ -397,5 +397,50 @@
 				json_output($resp['status'],$resp); 
 			}
 		}
-	    
+	    public function send_image()
+		{
+			$method = $_SERVER['REQUEST_METHOD'];
+			if($method != 'POST')
+			{
+				json_output(400,array('status' => 400,'message' => 'Bad request.'));
+			} 
+			else 
+			{
+				$params = json_decode(file_get_contents('php://input'), TRUE);
+				$action  = $this->input->get('action', TRUE);
+				if($action && $action=='add_profile')
+				{
+					$params['user_id'] = $this->MyModel->verify_token($params);
+					if (!$params['user_id']) {
+						return;
+					}
+					
+					$new_name = time();
+					$config['upload_path']          = './upload/profile_image/';
+	                $config['allowed_types']        = 'gif|jpg|png|jpeg';
+					$config['file_name'] 			= $new_name;
+	                $config['max_size']             = 1024;
+	                $this->load->library('upload', $config);
+
+	                if ( ! $this->upload->do_upload('userfile'))
+	                {
+	                    $error = array('error' => $this->upload->display_errors());
+						json_output(400,array('status' => 400,'error' => $error));
+	                }
+	                else
+	                {
+	          		
+	                    $data = array('upload_data' => $this->upload->data());
+		 
+		            	$data['upload_data']['file_name']  	= 'upload/profile_image/'.$data['upload_data']['orig_name'];
+	            	
+	                    json_output(200,array('status' => 200,'data' => $data));
+
+	                    $response = $this->MyModel->send_image($data,$params);
+						json_output($response['status'],$response);
+	                }
+				}
+				
+			}
+		}
 	}

@@ -20,6 +20,7 @@
         public function verify_token($params)
         {
 
+            
             extract($_REQUEST);
             $token   = '';
             $token   = $this->input->get_request_header('token', TRUE);
@@ -54,7 +55,16 @@
                     return $q[0]['rider_id'];
                 }
             }
-            json_output(401,array('status' => 401,'message' => 'Unauthorized4.'));
+            else if($action == "add_profile")
+            {
+                 $q = $this->db->select('*')->from('sab_rider_sessions')->where(['session_token'=>$token,'status_type'=>'1'])->get()->result_array();
+
+                if($q)
+                {   
+                    return $q[0]['rider_id'];
+                }
+            }
+            json_output(401,array('status' => 401,'message' => 'Unauthorized.'));
             return false;
         }
 
@@ -151,6 +161,7 @@
 
         public function changepassword($data)
         {
+            
             $user = $this->db->select('*')->from('sab_riders')->where('id',$data['user_id'])->get()->row();
             if($user && ($user->password == crypt($data['old_password'],$user->password_token))){
     			$randomIdLength=10;
@@ -187,7 +198,7 @@
                 $q = $this->db->select('*')->from('sab_rider_sessions')->where('id',$data['user_id'])->get()->row();
                 $reference_number = $user->reference_number;
                 $token = $q->session_token;
-                 return array('status' => 200,'reference_number' => "$reference_number", 'token' => "$token");
+                 return array('status' => 200,'message' => "OK", 'reference_number' => "$reference_number");
                 
             }
         }
@@ -378,4 +389,22 @@
             }
         
         }
+        public function send_image($data, $params)
+        {
+          
+            $user_id = $params['user_id'];
+
+            $user = $this->db->select('*')->from('sab_riders')->where('id',$user_id)->get()->row();
+         
+           
+            $this->db->set(['rider_image'=>$data['upload_data']['file_name']]);
+            $this->db->where('id',$user_id);
+            $result = $this->db->update('sab_riders'); 
+            if($result){
+                return array('status' => 200,'message' => "Photo has been updated", 'rider_image' => $data['upload_data']['file_name']);
+            }else{
+                return array('status' => 400,'message' => "Photo not Updated");
+            }
+        }
     }
+?>
