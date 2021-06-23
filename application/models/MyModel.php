@@ -64,6 +64,33 @@
                     return $q[0]['rider_id'];
                 }
             }
+            else if($action == "add_certificate")
+            {
+                 $q = $this->db->select('*')->from('sab_rider_sessions')->where(['session_token'=>$token,'status_type'=>'1'])->get()->result_array();
+
+                if($q)
+                {   
+                    return $q[0]['rider_id'];
+                }
+            }
+            else if($action == "front_licence")
+            {
+                 $q = $this->db->select('*')->from('sab_rider_sessions')->where(['session_token'=>$token,'status_type'=>'1'])->get()->result_array();
+
+                if($q)
+                {   
+                    return $q[0]['rider_id'];
+                }
+            }
+            else if($action == "back_licence")
+            {
+                 $q = $this->db->select('*')->from('sab_rider_sessions')->where(['session_token'=>$token,'status_type'=>'1'])->get()->result_array();
+
+                if($q)
+                {   
+                    return $q[0]['rider_id'];
+                }
+            }
             json_output(401,array('status' => 401,'message' => 'Unauthorized.'));
             return false;
         }
@@ -198,7 +225,7 @@
                 $q = $this->db->select('*')->from('sab_rider_sessions')->where('id',$data['user_id'])->get()->row();
                 $reference_number = $user->reference_number;
                 $token = $q->session_token;
-                 return array('status' => 200,'message' => "OK", 'reference_number' => "$reference_number");
+                return array('status' => 200,'message' => "OK", 'reference_number' => "$reference_number");
                 
             }
         }
@@ -401,10 +428,84 @@
             $this->db->where('id',$user_id);
             $result = $this->db->update('sab_riders'); 
             if($result){
-                return array('status' => 200,'message' => "Photo has been updated", 'rider_image' => $data['upload_data']['file_name']);
+                return array('status' => 200,'message' => "Photo has been added", 'rider_image' => $data['upload_data']['file_name']);
             }else{
-                return array('status' => 400,'message' => "Photo not Updated");
+                return array('status' => 400,'message' => "Photo not added");
+            }
+        }
+        public function send_certificate($data, $params)
+        {
+         
+            $result = null;
+
+            $user_id = $params['user_id'];
+
+            $isExists = $this->db->select('*')->from('sab_rider_imagePath')->where(['rider_id'=> $user_id, 'image_type_id'=> '1'])->get()->row();
+            if ($isExists) 
+            {
+                $this->db->set(['image_path'=>$data['upload_data']['file_name']]);
+                $this->db->where(['rider_id'=> $user_id, 'image_type_id'=> '1']);
+                $result = $this->db->update('sab_rider_imagePath');
+            } 
+            else 
+            {
+                $result = $this->db->insert('sab_rider_imagePath',array('image_path' => $data['upload_data']['file_name'],'image_type_id' => '1','rider_id' => $user_id));
+            }
+            
+            if($result){
+                return array('status' => 200,'message' => "Clearance Certificate Photo has been added", 'rider_image' => $data['upload_data']['file_name']);
+            }else{
+                return array('status' => 400,'message' => "Clearance Certificate Photo not been added");
+            }
+        }
+        public function front_licence($data, $params)
+        {
+         
+            $result = null;
+
+            $user_id = $params['user_id'];
+
+            $isExists = $this->db->select('*')->from('sab_rider_imagePath')->where(['rider_id'=> $user_id, 'image_type_id'=> '2'])->get()->row();
+            if ($isExists) 
+            {
+                $this->db->set(['image_path'=>$data['upload_data']['file_name']]);
+                $this->db->where(['rider_id'=> $user_id, 'image_type_id'=> '2']);
+                $result = $this->db->update('sab_rider_imagePath');
+            } 
+            else 
+            {
+                $result = $this->db->insert('sab_rider_imagePath',array('image_path' => $data['upload_data']['file_name'],'image_type_id' => '2','rider_id' => $user_id));
+            }
+            
+            if($result){
+                return array('status' => 200,'message' => "Front Licence Photo has been added", 'rider_image' => $data['upload_data']['file_name']);
+            }else{
+                return array('status' => 400,'message' => "Front Licence Photo not been added");
+            }
+        }
+        public function back_licence($data, $params)
+        {
+         
+            $result = null;
+
+            $user_id = $params['user_id'];
+
+            $isExists = $this->db->select('*')->from('sab_rider_imagePath')->where(['rider_id'=> $user_id, 'image_type_id'=> '3'])->get()->row();
+            if ($isExists) 
+            {
+                $this->db->set(['image_path'=>$data['upload_data']['file_name']]);
+                $this->db->where(['rider_id'=> $user_id, 'image_type_id'=> '3']);
+                $result = $this->db->update('sab_rider_imagePath');
+            } 
+            else 
+            {
+                $result = $this->db->insert('sab_rider_imagePath',array('image_path' => $data['upload_data']['file_name'],'image_type_id' => '3','rider_id' => $user_id));
+            }
+            
+            if($result){
+                return array('status' => 200,'message' => "Back Licence Photo has been added", 'rider_image' => $data['upload_data']['file_name']);
+            }else{
+                return array('status' => 400,'message' => "Back Licence Photo not been added");
             }
         }
     }
-?>

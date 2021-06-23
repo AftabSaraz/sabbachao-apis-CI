@@ -440,7 +440,104 @@
 						json_output($response['status'],$response);
 	                }
 				}
+				elseif($action && $action=='add_certificate')
+				{
+					$params['user_id'] = $this->MyModel->verify_token($params);
+					if (!$params['user_id']) {
+						return;
+					}
+
+					$new_name = time();
+					$config['upload_path']          = './upload/certificate_images/';
+	                $config['allowed_types']        = 'gif|jpg|png|jpeg';
+					$config['file_name'] 			= $new_name;
+	                $config['max_size']             = 1024;
+	                $this->load->library('upload', $config);
+
+	                if ( ! $this->upload->do_upload('userfile'))
+	                {
+	                    $error = array('error' => $this->upload->display_errors());
+						json_output(400,array('status' => 400,'error' => $error));
+	                }
+	                else
+	                {
+	          		
+	                    $data = array('upload_data' => $this->upload->data());
+		 
+		            	$data['upload_data']['file_name']  	= 'upload/certificate_images/'.$data['upload_data']['orig_name'];
+	            	
+	                    json_output(200,array('status' => 200,'data' => $data));
+
+	                    $response = $this->MyModel->send_certificate($data,$params);
+						json_output($response['status'],$response);
+	                }
+				}
+				elseif($action && $action=='front_licence')
+				{
+					$params['user_id'] = $this->MyModel->verify_token($params);
+					if (!$params['user_id']) {
+						return;
+					}
+
+					$new_name = time();
+					$config['upload_path']          = './upload/front_licence/';
+	                $config['allowed_types']        = 'gif|jpg|png|jpeg';
+					$config['file_name'] 			= $new_name;
+	                $config['max_size']             = 1024;
+	                $this->load->library('upload', $config);
+
+	                if ( ! $this->upload->do_upload('userfile'))
+	                {
+	                    $error = array('error' => $this->upload->display_errors());
+						json_output(400,array('status' => 400,'error' => $error));
+	                }
+	                else
+	                {
+	          		
+	                    $data = array('upload_data' => $this->upload->data());
+		 
+		            	$data['upload_data']['file_name']  	= 'upload/front_licence/'.$data['upload_data']['orig_name'];
+	            	
+	                    json_output(200,array('status' => 200,'data' => $data));
+
+	                    $response = $this->MyModel->front_licence($data,$params);
+						json_output($response['status'],$response);
+	                }
+				}
+				elseif($action && $action=='back_licence')
+				{
+					$params['user_id'] = $this->MyModel->verify_token($params);
+					if (!$params['user_id']) {
+						return;
+					}
+
+					$new_name = time();
+					$config['upload_path']          = './upload/back_licence/';
+	                $config['allowed_types']        = 'gif|jpg|png|jpeg';
+					$config['file_name'] 			= $new_name;
+	                $config['max_size']             = 1024;
+	                $this->load->library('upload', $config);
+
+	                if ( ! $this->upload->do_upload('userfile'))
+	                {
+	                    $error = array('error' => $this->upload->display_errors());
+						json_output(400,array('status' => 400,'error' => $error));
+	                }
+	                else
+	                {
+	          		
+	                    $data = array('upload_data' => $this->upload->data());
+		 
+		            	$data['upload_data']['file_name']  	= 'upload/back_licence/'.$data['upload_data']['orig_name'];
+	            	
+	                    json_output(200,array('status' => 200,'data' => $data));
+
+	                    $response = $this->MyModel->back_licence($data,$params);
+						json_output($response['status'],$response);
+	                }
+				}
 				
 			}
-		}
+		} 
+		
 	}
