@@ -301,20 +301,30 @@
 
         public function send_rider_request($params)
         {
+           
             $api_key   = $this->input->get_request_header('api_key', TRUE);
            
             !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
             !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
             if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
             {
-                $q = $this->db->insert('sab_seller_rider',$params);
-                if($q)
+                $result = null;
+                $isExists = $this->db->select('*')->from('sab_seller_rider')->where(['rider_id'=> $params['rider_id'], 'store_id'=>$params['store_id']])->get()->row();
+                if($isExists)
                 {
-                    return array('status' => 201,'message' => 'Request Send Successfully');
+                    return array('status' => 202,'message' => 'You have already sent request');
                 }
                 else
                 {
-                    return array('status' => 201,'message' => 'Fail to send request! Try agian Later');
+                    $result = $this->db->insert('sab_seller_rider',array('rider_id' => $params['rider_id'],'store_id' => $params['store_id']));
+                        if($result)
+                        {
+                            return array('status' => 201,'message' => 'Request sent successfully');
+                        }
+                        else
+                        {
+                           return array('status' => 201,'message' => 'Request sending fail! Please Try Again Later');
+                        }
                 }
             }
             else
