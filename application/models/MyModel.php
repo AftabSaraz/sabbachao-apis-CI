@@ -283,146 +283,210 @@
      
         public function add_rider($params)
         {
-            $api_key   = $this->input->get_request_header('api_key', TRUE);
-           
-            !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
-            !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
-            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+            if($params['reference_number'] == "")
             {
-                $data = $this->db->select('id AS "Rider ID",username AS "Rider Name",mobile_number AS "Rider Number",rider_image')->from('sab_riders')->where('reference_number',$params['reference_number'])->get()->result();
-                    return array('status' => 201,'message' => 'Added Successfully','data'=>$data);
+                return array('status' => 201,'message' => 'Can not be empty');
             }
             else
-            { 
-                return array('status' => 201,'message' => 'Something Went Wrong Please Try Again Later');
-            }
-
+            {
+                $api_key   = $this->input->get_request_header('api_key', TRUE);
+               
+                !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
+                !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
+                if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+                {
+                    $result = $this->db->select('*')->from('sab_riders')->where('reference_number',$params['reference_number'])->get()->result();
+                    if($result)
+                    { 
+                        $data = $this->db->select('id AS "Rider ID",username AS "Rider Name",mobile_number AS "Rider Number",rider_image')->from('sab_riders')->where('reference_number',$params['reference_number'])->get()->result();
+                        return array('status' => 201,'message' => 'Added Successfully','data'=>$data);
+                    }
+                    else
+                    {
+                        return array('status' => 201,'message' => 'No Such any reference number Choose correct one');
+                    }
+                }
+                else
+                { 
+                    return array('status' => 201,'message' => 'Something Went Wrong Please Try Again Later');
+                }
+            }   
         }
 
         public function send_rider_request($params)
         {
-           
-            $api_key   = $this->input->get_request_header('api_key', TRUE);
-           
-            !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
-            !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
-            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+            if($params['store_id'] == "" || $params['rider_id'] == "")
             {
-                $result = null;
-                $isExists = $this->db->select('*')->from('sab_seller_rider')->where(['rider_id'=> $params['rider_id'], 'store_id'=>$params['store_id']])->get()->row();
-                if($isExists)
+                return array('status' => 201,'message' => 'Fields can not be empty');
+            }
+            else
+            {
+           
+                $api_key   = $this->input->get_request_header('api_key', TRUE);
+               
+                !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
+                !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
+                if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
                 {
-                    return array('status' => 202,'message' => 'You have already sent request');
+                    $result = null;
+                    $isExists = $this->db->select('*')->from('sab_seller_rider')->where(['rider_id'=> $params['rider_id'], 'store_id'=>$params['store_id']])->get()->row();
+                    if($isExists)
+                    {
+                        return array('status' => 202,'message' => 'You have already sent request');
+                    }
+                    else
+                    {
+                        $result = $this->db->insert('sab_seller_rider',array('rider_id' => $params['rider_id'],'store_id' => $params['store_id']));
+                            if($result)
+                            {
+                                return array('status' => 201,'message' => 'Request sent successfully');
+                            }
+                            else
+                            {
+                               return array('status' => 201,'message' => 'Request sending fail! Please Try Again Later');
+                            }
+                    }
                 }
                 else
                 {
-                    $result = $this->db->insert('sab_seller_rider',array('rider_id' => $params['rider_id'],'store_id' => $params['store_id']));
-                        if($result)
-                        {
-                            return array('status' => 201,'message' => 'Request sent successfully');
-                        }
-                        else
-                        {
-                           return array('status' => 201,'message' => 'Request sending fail! Please Try Again Later');
-                        }
+                     return array('status' => 201,'message' => 'Something Went Wrong!');
                 }
             }
-            else
-            {
-                 return array('status' => 201,'message' => 'Something Went Wrong!');
-            }
         }
-
+        
         public function rider_information($params)
         {
-
-            $api_key   = $this->input->get_request_header('api_key', TRUE);
-           
-            !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
-            !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
-            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+            if($params['rider_id'] == "")
             {
-                $data = $this->db->select('username AS "Rider Name",mobile_number AS "Rider Number",rider_image, created_at AS "Rider Adding Date and Time"')->from('sab_riders')->where('id',$params['rider_id'])->get()->result();
-                    return array('status' => 201,'message' => 'Rider Infomration','data'=>$data);
+                return array('status' => 201,'message' => 'Field can not be empty');
             }
             else
             {
-                return array('status' => 201,'message' => 'Something Went Wrong Please Try Again Later');
+                $api_key   = $this->input->get_request_header('api_key', TRUE);
+               
+                !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
+                !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
+                if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+                {
+                    $result = $this->db->select('*')->from('sab_riders')->where('id',$params['rider_id'])->get()->result();
+                    if($result)
+                    {
+                        $data = $this->db->select('username AS "Rider Name",mobile_number AS "Rider Number",rider_image, created_at AS "Rider Adding Date and Time"')->from('sab_riders')->where('id',$params['rider_id'])->get()->result();
+                        return array('status' => 201,'message' => 'Rider Infomration','data'=>$data);
+                    }
+                    else
+                    {
+                         return array('status' => 201,'message' => 'Rider Id Not Found');
+                    }
+                }
+                else
+                {
+                    return array('status' => 201,'message' => 'Something Went Wrong Please Try Again Later');
+                }
             }
         }
 
         public function cancel_rider_request($params)
         {
-            $api_key   = $this->input->get_request_header('api_key', TRUE);
-           
-            !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
-            !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
-            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+            if($params['store_id'] == "" || $params['rider_id'] == "")
             {
-                $q = $this->db->where(['rider_id' => $params['rider_id'], 'store_id' => $params['store_id']])->update('sab_seller_rider',array('status' => 6));
-                if($q)
-                {
-                    return array('status' => 201,'message' => 'Request Cancel Successfully');
-                }
-                else
-                {
-                    return array('status' => 201,'message' => 'Request Fail ! Try agian Later');
-                }
+                return array('status' => 201,'message' => 'Fields can not be empty');
             }
             else
             {
-                 return array('status' => 201,'message' => 'Something Went Wrong!');
+                $api_key   = $this->input->get_request_header('api_key', TRUE);
+               
+                !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
+                !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
+                if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+                {
+                    $q = $this->db->where(['rider_id' => $params['rider_id'], 'store_id' => $params['store_id']])->update('sab_seller_rider',array('status' => 6));
+                    if($q)
+                    {
+                        return array('status' => 201,'message' => 'Request Cancel Successfully');
+                    }
+                    else
+                    {
+                        return array('status' => 201,'message' => 'Request Fail ! Try agian Later');
+                    }
+                }
+                else
+                {
+                     return array('status' => 201,'message' => 'Something Went Wrong!');
+                }
             }
         }
 
         public function delete_rider_request($params)
         {
-            $api_key   = $this->input->get_request_header('api_key', TRUE);
-           
-            !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
-            !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
-        
-            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+            if($params['store_id'] == "" || $params['rider_id'] == "")
             {
-                $q = $this->db->where(['rider_id' => $params['rider_id'], 'store_id' => $params['store_id']])->update('sab_seller_rider',array('status' => 5));
-                if($q)
-                {
-                    return array('status' => 201,'message' => 'Request Deleted Successfully');
-                }
-                else
-                {
-                    return array('status' => 201,'message' => 'Request Fail ! Try agian Later');
-                }
+                return array('status' => 201,'message' => 'Fields can not be empty');
             }
             else
             {
-                 return array('status' => 201,'message' => 'Something Went Wrong!');
+                $api_key   = $this->input->get_request_header('api_key', TRUE);
+               
+                !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
+                !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
+            
+                if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+                {
+                    $q = $this->db->where(['rider_id' => $params['rider_id'], 'store_id' => $params['store_id']])->update('sab_seller_rider',array('status' => 5));
+                    if($q)
+                    {
+                        return array('status' => 201,'message' => 'Request Deleted Successfully');
+                    }
+                    else
+                    {
+                        return array('status' => 201,'message' => 'Request Fail ! Try agian Later');
+                    }
+                }
+                else
+                {
+                     return array('status' => 201,'message' => 'Something Went Wrong!');
+                }
             }
         }
         public function rider_list($params)
         {
-            $api_key   = $this->input->get_request_header('api_key', TRUE);
-           
-            !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
-            !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
-            if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+            if($params['store_id'] == "")
             {
-                $data = $this->db->select(
-                    'sab_riders.id AS Rider ID,
-                     sab_riders.username AS Rider Name,
-                     sab_riders.mobile_number AS Rider Number,
-                     sab_seller_rider.status AS Status
-                    '
-                )
-                ->from('sab_seller_rider')
-                ->where('store_id',$params['store_id'])
-                ->join('sab_riders', 'sab_riders.id = sab_seller_rider.rider_id')
-                ->get()->result();
-                return array('status' => 201,'message' => 'Rider Infomration','data'=>$data);
+                return array('status' => 201,'message' => 'Store Id can not be empty');
             }
             else
             {
-                return array('status' => 201,'message' => 'Something Went Wrong Please Try Again Later');
+                $api_key   = $this->input->get_request_header('api_key', TRUE);
+               
+                !$api_key  && $api_key  = $this->input->get('api_key', TRUE);
+                !$api_key  && $api_key  = $this->input->post('api_key', TRUE);
+                if($api_key=="zhjeDX8SH3ryV0RGk8f3ZWRigkkm3qxBw")
+                {
+                    $result = $this->db->select('*')->from('sab_company_stores')->where('id',$params['store_id'])->get()->row();
+                    if($result)
+                    {
+                        $data = $this->db->select(
+                        'sab_riders.id AS Rider ID,
+                         sab_riders.username AS Rider Name,
+                         sab_riders.mobile_number AS Rider Number,
+                         sab_seller_rider.status AS Status
+                        '
+                        )
+                        ->from('sab_seller_rider')
+                        ->where('store_id',$params['store_id'])
+                        ->join('sab_riders', 'sab_riders.id = sab_seller_rider.rider_id')
+                        ->get()->result();
+                        return array('status' => 201,'message' => 'Rider Infomration','data'=>$data);
+                    }
+                    else
+                    {
+                        return array('status' => 201,'message' => 'Invalid Store Id');
+                    }
+                }
+                else
+                {
+                    return array('status' => 201,'message' => 'Something Went Wrong Please Try Again Later');
+                }
             }
         
         }
@@ -438,9 +502,9 @@
             $this->db->where('id',$user_id);
             $result = $this->db->update('sab_riders'); 
             if($result){
-                return array('status' => 200,'message' => "Photo has been added", 'rider_image' => $data['upload_data']['file_name']);
+                return array('status' => 200,'message' => "Photo has been updated", 'rider_image' => $data['upload_data']['file_name']);
             }else{
-                return array('status' => 400,'message' => "Photo not added");
+                return array('status' => 400,'message' => "Photo not Updated");
             }
         }
         public function send_certificate($data, $params)
