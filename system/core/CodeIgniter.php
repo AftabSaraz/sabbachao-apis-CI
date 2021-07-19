@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CodeIgniter
  *
@@ -395,6 +396,7 @@ if ( ! is_php('5.4'))
  *  controller methods that begin with an underscore.
  */
 
+
 	$e404 = FALSE;
 	$class = ucfirst($RTR->class);
 	$method = $RTR->method;
@@ -494,9 +496,10 @@ if ( ! is_php('5.4'))
  *  Instantiate the requested controller
  * ------------------------------------------------------
  */
+ 
 	// Mark a start point so we can benchmark the controller
 	$BM->mark('controller_execution_time_( '.$class.' / '.$method.' )_start');
-
+	
 	$CI = new $class();
 
 /*
